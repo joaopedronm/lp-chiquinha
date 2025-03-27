@@ -27,12 +27,18 @@ export const projectType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'link',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'type',
       type: 'string',
       options: {
         list: [
           { title: 'Projeto de Lei', value: 'projeto-de-lei' },
           { title: 'Executivo', value: 'executivo' },
+          { title: 'Requerimento', value: 'requerimento' },
         ],
       },
       validation: (rule) => rule.required(),
@@ -45,8 +51,7 @@ export const projectType = defineType({
     }),
     defineField({
       name: 'publishedAt',
-      type: 'datetime',
-      initialValue: () => new Date().toISOString(),
+      type: 'string',
       validation: (rule) => rule.required(),
     }),
     defineField({

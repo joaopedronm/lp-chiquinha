@@ -11,7 +11,7 @@ const links = [
   },
   {
     name: 'projetos',
-    path: '/portfolio'
+    path: '/projetos'
   },
   {
     name: 'blog',
@@ -19,7 +19,7 @@ const links = [
   },
   {
     name: 'contato',
-    path: '/contact'
+    path: '/contato'
   },
 ]
 

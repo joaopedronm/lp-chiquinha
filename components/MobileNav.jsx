@@ -12,29 +12,17 @@ const links = [
     name: 'home',
     path: '/'
   },
-  // {
-  //   name: 'services',
-  //   path: '/services'
-  // },
   {
-    name: 'resume',
-    path: '/resume'
-  },
-  {
-    name: 'portfolio',
-    path: '/portfolio'
-  },
-  {
-    name: 'contact',
-    path: '/contact'
+    name: 'projetos',
+    path: '/projetos'
   },
   {
     name: 'blog',
     path: '/blog'
   },
   {
-    name: 'snippets',
-    path: '/snippets'
+    name: 'contato',
+    path: '/contato'
   },
 ]
 
