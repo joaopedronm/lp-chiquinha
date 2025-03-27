@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { CiMenuFries } from 'react-icons/ci'
 import { LuSun } from "react-icons/lu";
+import Image from 'next/image'
 
 const links = [
   {
@@ -36,13 +37,16 @@ const MobileNav = () => {
         <CiMenuFries className='text-[32px] text-accent' />
       </SheetTrigger>
 
-      <SheetContent className='flex flex-col'>
+      <SheetContent className='flex flex-col items-center'>
         <SheetTitle>
           <div className='mt-16 mb-16 text-center text-2xl'>
             <Link href="/">
-            <h1 className='text-2xl font-semibold text-accent xl:text-4xl'>
-              &#123; <span className='text-white'>João Pedro </span> &#125;
-            </h1>
+              <Image
+                src='/assets/logo.png'
+                alt='logo-chiquinha-do-pixica'
+                width={180}
+                height={100}
+              />
             </Link>
           </div>
         </SheetTitle>

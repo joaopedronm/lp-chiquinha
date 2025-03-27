@@ -4,32 +4,42 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { FaPhoneAlt, FaEnvelope, FaMapMarkedAlt } from 'react-icons/fa';
+import { FaPhoneAlt, FaEnvelope, FaMapMarkedAlt, FaComments } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import emailjs from 'emailjs-com';
 
 const info = [
   {
-    icon: <FaPhoneAlt />,
-    title: 'Phone',
-    description: '+55 (88) 98824-2039',
-  },
-  {
     icon: <FaEnvelope />,
     title: 'Email',
-    description: 'contato@joaopedrodev.com.br',
+    description: 'ouvidoria@vereadora.com.br',
   },
   {
     icon: <FaMapMarkedAlt />,
-    title: 'Address',
-    description: 'Itarema-CE, BR',
+    title: 'Endereço',
+    description: 'Câmara Municipal - Sua Cidade, Estado',
   },
+  {
+    icon: <FaComments />,
+    title: 'Atendimento',
+    description: 'Segunda a Sexta, 8h às 17h',
+  },
+];
+
+const contactSubjects = [
+  { value: 'duvida', label: 'Dúvida' },
+  { value: 'sugestao', label: 'Sugestão' },
+  { value: 'reclamacao', label: 'Reclamação' },
+  { value: 'elogio', label: 'Elogio' },
+  { value: 'outro', label: 'Outro assunto' },
 ];
 
 const Contact = () => {
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [subject, setSubject] = useState('duvida');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -39,32 +49,42 @@ const Contact = () => {
     setLoading(true);
 
     if (!firstname || !lastname || !email || !message) {
-      alert("Please, fill in all fields.");
-      setLoading(false)
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      setLoading(false);
       return;
     }
 
     const templateParams = {
       from_name: `${firstname} ${lastname}`,
-      from_email: `${email}`,
-      to_name: 'João Pedro',
+      from_email: email,
+      phone: phone,
+      subject: contactSubjects.find(item => item.value === subject)?.label || subject,
+      to_name: 'Vereadora',
       message: message,
     };
 
     try {
       await emailjs.send(
-        "service_q1l1w6y",
-        "template_sssi63v",
+        "service_q1l1w6y", // Substitua pelo seu Service ID
+        "template_sssi63v", // Substitua pelo seu Template ID
         templateParams,
-        "5oRdzJvEjc7FLvZnH"
+        "5oRdzJvEjc7FLvZnH" // Substitua pelo seu User ID
       );
       setSuccess(true);
       setFirstname("");
       setLastname("");
       setEmail("");
+      setPhone("");
+      setSubject("duvida");
       setMessage("");
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSuccess(false);
+      }, 5000);
     } catch (error) {
-      console.error("Error sending email", error);
+      console.error("Erro ao enviar mensagem", error);
+      alert("Ocorreu um erro ao enviar sua mensagem. Por favor, tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -85,47 +105,74 @@ const Contact = () => {
           <div className='xl:w-[54%] order-2 xl:order-none'>
             <form
               onSubmit={handleSendMessage}
-              className='flex flex-col gap-6 p-10 bg-[#27272c] rounded-xl'
+              className='flex flex-col gap-6 p-10 bg-white rounded-xl border border-primary/20'
             >
-              <h3 className='text-4xl text-accent'>Let’s Talk</h3>
-              <p className='text-white/60'>Reach out and let’s make things happen.</p>
+              <h3 className='text-4xl text-primary'>Ouvidoria</h3>
+              <p className='text-black/90 text-xl'>Entre em contato com o gabinete da vereadora</p>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <Input
                   type="text"
-                  placeholder="Firstname"
+                  placeholder="Nome *"
                   value={firstname}
                   onChange={(e) => setFirstname(e.target.value)}
+                  required
                 />
                 <Input
                   type="text"
-                  placeholder="Lastname"
+                  placeholder="Sobrenome *"
                   value={lastname}
                   onChange={(e) => setLastname(e.target.value)}
+                  required
                 />
                 <Input
                   type="email"
-                  placeholder="Email address"
+                  placeholder="Email *"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
+                <Input
+                  type="tel"
+                  placeholder="Telefone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+
+              {/* Assunto */}
+              <div className="w-full">
+                <label className="text-base text-black/90 mb-2 block">Assunto *</label>
+                <select
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="flex h-[48px] w-full rounded-[8px] border border-black/50 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  required
+                >
+                  {contactSubjects.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* textarea */}
               <Textarea
                 className='h-[200px]'
-                placeholder='Type your message here.'
+                placeholder='Digite sua mensagem aqui *'
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                required
               />
 
               {/* button */}
               <Button type="submit" size="md" className="max-w-40" disabled={loading}>
-                {loading ? 'Enviando...' : 'Send message'}
+                {loading ? 'Enviando...' : 'Enviar mensagem'}
               </Button>
 
               {success && (
-                <p className="text-accent">Message sent successfully!</p>
+                <p className="text-accent">Mensagem enviada com sucesso!</p>
               )}
             </form>
           </div>
@@ -136,11 +183,11 @@ const Contact = () => {
               {info.map((item, index) => {
                 return (
                   <li key={index} className='flex items-center gap-6'>
-                    <div className='w-[52px] h-[52px] xl:w-[72px] xl:h-[72px] bg-[#27272c] text-accent rounded-[8px] flex items-center justify-center'>
+                    <div className='w-[52px] h-[52px] xl:w-[72px] xl:h-[72px] bg-white border border-primary/20 text-accent rounded-[8px] flex items-center justify-center'>
                       <div className='text-[28px]'>{item.icon}</div>
                     </div>
                     <div className='flex-1'>
-                      <p className='text-white/60'>{item.title}</p>
+                      <p className='text-black/60'>{item.title}</p>
                       <h3 className='text-lg'>{item.description}</h3>
                     </div>
                   </li>

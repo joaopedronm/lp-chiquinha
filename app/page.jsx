@@ -5,6 +5,7 @@ import { AiOutlineFileDone } from "react-icons/ai"
 import { Button } from '@/components/ui/button'
 import Socials from '@/components/Socials'
 import Photo from '@/components/Photo'
+import Link from 'next/link'
 
 const Home = () => {
 
@@ -28,10 +29,13 @@ const Home = () => {
                 variant='outline'
                 size='lg'
                 className='uppercase flex items-center gap-2'
-                onClick={() => {}}
               >
-                <span>Conheça meus projetos</span>
-                <AiOutlineFileDone className='text-xl' />
+                <Link href="/projetos">
+                  <div className='flex items-center gap-2'>
+                    <span>Conheça meus projetos</span>
+                    <AiOutlineFileDone className='text-xl' />
+                  </div>
+                </Link>
               </Button>
 
               <div className='mb-8 xl:mb-0'>
