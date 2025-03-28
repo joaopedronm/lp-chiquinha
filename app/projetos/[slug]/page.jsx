@@ -110,5 +110,3 @@ export default async function ProjetoDetalhes({ params }) {
     </article>
   )
 }
-
-// Funções auxiliares (reutilize as mesmas do componente anterior

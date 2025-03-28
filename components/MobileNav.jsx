@@ -5,7 +5,6 @@ import {Sheet, SheetContent, SheetTitle, SheetTrigger} from '@/components/ui/she
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { CiMenuFries } from 'react-icons/ci'
-import { LuSun } from "react-icons/lu";
 import Image from 'next/image'
 
 const links = [
@@ -63,7 +62,6 @@ const MobileNav = () => {
               </Link>
             )
           })}
-          <LuSun className='cursor-pointer' onClick={() => window.alert("Sorry! Devs don't like light themes :(")} />
         </nav>
         
       </SheetContent>

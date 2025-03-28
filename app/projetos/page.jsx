@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react'
 import { client } from '../lib/sanity'
 
 const getStatusColor = (status) => {
-  const statusLower = status.toLowerCase()
-  if (statusLower.includes('executado') || statusLower.includes('concluído')) return 'bg-green-100 text-green-800'
-  if (statusLower.includes('aprovado')) return 'bg-blue-100 text-blue-800'
-  if (statusLower.includes('andamento')) return 'bg-yellow-100 text-yellow-800'
+  const statusLower = status?.toLowerCase() || ''
+  if (statusLower.includes('executado') || statusLower.includes('concluído')) return 'bg-green-300 text-black'
+  if (statusLower.includes('aprovado')) return 'bg-green-100 text-black'
+  if (statusLower.includes('andamento')) return 'bg-yellow-100 text-black'
   return 'bg-gray-100 text-gray-800'
 }
 
@@ -24,10 +24,10 @@ const getTypeColor = (type) => {
   
   const normalizedType = type.toLowerCase().replace(/-/g, '')
   switch (normalizedType) {
-    case 'executivo': return 'bg-blue-100 text-blue-800'
-    case 'projetodelei': return 'bg-purple-100 text-purple-800'
-    case 'requerimento': return 'bg-emerald-100 text-emerald-800'
-    case 'indicacao': return 'bg-amber-100 text-amber-800'
+    case 'executivo': return 'bg-blue-100 text-black'
+    case 'projetodelei': return 'bg-blue-300 text-black'
+    case 'requerimento': return 'bg-blue-200 text-black'
+    case 'indicacao': return 'bg-amber-100 text-black'
     default: return 'bg-gray-100 text-gray-800'
   }
 }
@@ -35,13 +35,18 @@ const getTypeColor = (type) => {
 const Projetos = () => {
   const [projetos, setProjetos] = useState([])
   const [loading, setLoading] = useState(true)
-  const [activeFilter, setActiveFilter] = useState('Todos')
+  const [activeStatusFilter, setActiveStatusFilter] = useState('Todos')
+  const [activeTypeFilter, setActiveTypeFilter] = useState('Todos')
+  
+  // Extrair tipos únicos para os filtros
+  const statusOptions = ['Todos', 'Aprovados', 'Não Aprovados', 'Executados']
+  const typeOptions = ['Todos', ...new Set(projetos.map(p => p.type ? formatType(p.type) : 'Projeto'))]
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const query = `
-          *[_type == "project"] | order(publishedAt desc) {
+          *[_type == "project"] {
             _id,
             title,
             smallDescription,
@@ -65,23 +70,25 @@ const Projetos = () => {
   }, [])
 
   const filteredProjects = projetos.filter(projeto => {
-    const statusLower = projeto.status.toLowerCase().trim()
+    // Filtrar por status
+    const statusLower = projeto.status?.toLowerCase().trim() || ''
+    let statusMatch = true
     
-    if (activeFilter === 'Todos') return true
-    
-    if (activeFilter === 'Aprovados') {
-      return statusLower === 'aprovado'
+    if (activeStatusFilter === 'Aprovados') {
+      statusMatch = statusLower === 'aprovado'
+    } else if (activeStatusFilter === 'Não Aprovados') {
+      statusMatch = statusLower === 'não aprovado' || statusLower === 'nao aprovado'
+    } else if (activeStatusFilter === 'Executados') {
+      statusMatch = statusLower === 'executado'
+    } else if (activeStatusFilter !== 'Todos') {
+      statusMatch = statusLower === activeStatusFilter.toLowerCase()
     }
     
-    if (activeFilter === 'Não Aprovados') {
-      return statusLower === 'não aprovado' || statusLower === 'nao aprovado'
-    }
+    // Filtrar por tipo
+    const projectType = projeto.type ? formatType(projeto.type) : 'Projeto'
+    let typeMatch = activeTypeFilter === 'Todos' || projectType === activeTypeFilter
     
-    if (activeFilter === 'Executados') {
-      return statusLower === 'executado'
-    }
-    
-    return true
+    return statusMatch && typeMatch
   })
 
   if (loading) {
@@ -103,27 +110,54 @@ const Projetos = () => {
           </p>
         </div>
 
-        {/* Filtros */}
-        <div className="flex flex-wrap gap-2 mb-8 justify-center">
-          {['Todos', 'Aprovados', 'Não Aprovados', 'Executados'].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-md transition-colors ${
-                activeFilter === filter
-                  ? 'bg-accent text-black shadow-md'
-                  : 'border border-gray-300 hover:bg-gray-50 hover:shadow-sm'
-              }`}
+        {/* Filtros em Dropdown */}
+        <div className="flex flex-col md:flex-row gap-8 mb-8">
+          <div className="w-full md:w-auto">
+            <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 mb-1">
+              Filtrar por Status
+            </label>
+            <select
+              id="status-filter"
+              value={activeStatusFilter}
+              onChange={(e) => setActiveStatusFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-accent focus:border-accent"
             >
-              {filter}
-            </button>
-          ))}
+              {statusOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="w-full md:w-auto">
+            <label htmlFor="type-filter" className="block text-sm font-medium text-gray-700 mb-1">
+              Filtrar por Tipo
+            </label>
+            <select
+              id="type-filter"
+              value={activeTypeFilter}
+              onChange={(e) => setActiveTypeFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              {typeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Contador de resultados */}
+        <div className="text-left mb-6 text-gray-600">
+          {filteredProjects.length} {filteredProjects.length === 1 ? 'projeto encontrado' : 'projetos encontrados'}
         </div>
 
         {/* Lista de Projetos */}
         {filteredProjects.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Nenhum projeto encontrado com este filtro.</p>
+            <p className="text-gray-500 text-lg">Nenhum projeto encontrado com estes filtros.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

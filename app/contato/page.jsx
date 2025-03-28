@@ -4,20 +4,21 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { FaPhoneAlt, FaEnvelope, FaMapMarkedAlt, FaComments } from 'react-icons/fa';
+import { FaEnvelope, FaMapMarkedAlt, FaComments } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import emailjs from 'emailjs-com';
+import Modal from '@/components/Modal';
 
 const info = [
   {
     icon: <FaEnvelope />,
     title: 'Email',
-    description: 'ouvidoria@vereadora.com.br',
+    description: 'chiquinhadopixica@gmail.com',
   },
   {
     icon: <FaMapMarkedAlt />,
     title: 'Endereço',
-    description: 'Câmara Municipal - Sua Cidade, Estado',
+    description: 'Av. João Batista Rios, S/N - Centro, Itarema - CE',
   },
   {
     icon: <FaComments />,
@@ -44,6 +45,10 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  console.log(firstname)
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -55,8 +60,8 @@ const Contact = () => {
     }
 
     const templateParams = {
-      from_name: `${firstname} ${lastname}`,
-      from_email: email,
+      firstname: `${firstname} ${lastname}`,
+      email: email,
       phone: phone,
       subject: contactSubjects.find(item => item.value === subject)?.label || subject,
       to_name: 'Vereadora',
@@ -65,10 +70,10 @@ const Contact = () => {
 
     try {
       await emailjs.send(
-        "service_q1l1w6y", // Substitua pelo seu Service ID
-        "template_sssi63v", // Substitua pelo seu Template ID
+        "service_p56rvhl", // Substitua pelo seu Service ID
+        "template_ebykfvt", // Substitua pelo seu Template ID
         templateParams,
-        "5oRdzJvEjc7FLvZnH" // Substitua pelo seu User ID
+        "jAUCqPtAtjWMcq7MB" // Substitua pelo seu User ID
       );
       setSuccess(true);
       setFirstname("");
@@ -172,7 +177,13 @@ const Contact = () => {
               </Button>
 
               {success && (
-                <p className="text-accent">Mensagem enviada com sucesso!</p>
+                  <Modal 
+                    onClose={() => setSuccess(false)}
+                    title="Mensagem enviada!"
+                    description="Retornaremos o contato assim que possível."
+                    buttonText="Fechar"
+                  />
+                // <p className="text-accent">Mensagem enviada com sucesso!</p>
               )}
             </form>
           </div>
