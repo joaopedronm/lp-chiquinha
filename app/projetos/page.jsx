@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { client } from '../lib/sanity'
+import { GrDocumentText } from "react-icons/gr";
 
 const getStatusColor = (status) => {
   const statusLower = status?.toLowerCase() || ''
@@ -168,9 +169,9 @@ const Projetos = () => {
               >
                 <div className="p-6 h-full flex flex-col">
                   <div className="flex justify-between items-start mb-3">
-                    <span className={`text-xs px-2 py-1 rounded-full ${getTypeColor(projeto.type)}`}>
-                      {formatType(projeto.type)}
-                    </span>
+                    <p className={`text-xs px-2 py-1 rounded-full flex items-center gap-2 ${getTypeColor(projeto.type)}`}>
+                    <GrDocumentText /> <span>{formatType(projeto.type)}</span>
+                    </p>
                     <span className={`text-xs px-2 py-1 rounded-full capitalize ${getStatusColor(projeto.status)}`}>
                       {projeto.status}
                     </span>
